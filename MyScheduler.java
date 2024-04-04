@@ -6,7 +6,10 @@ import java.util.concurrent.*;
 public class MyScheduler {
     private int numJobs;
     private String property; // four possible options 'avg wait', 'max wait', 'combined', 'deadlines'
-    // 'avg wait' use shortest job first
+    // 'avg wait' - shortest job first
+    // 'max wait' - first come first serve
+    // 'combined' - combined FCFS and SJF
+    // 'deadlines' - earliest deadline first
     LinkedBlcokingQueue<Job> outgoing;
     LinkedBlcokingQueue<Job> incoming;
 
