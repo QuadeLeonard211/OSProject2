@@ -12,13 +12,14 @@ public class MyScheduler {
     // 'deadlines' - earliest deadline first
     LinkedBlcokingQueue<Job> outgoing;
     LinkedBlcokingQueue<Job> incoming;
+    private Semaphore semaphore;
 
     public MyScheduler(int numJobs, String property) {
         this.numJobs = numJobs;
         this.property = property;
         this.outgoing = getOutgoingQueue();
         this.incoming = getIncomingQueue();
-        
+        this.locker = new Semaphore(numJobs / 2);
     }
 
     public LinkedBlockingQueue<Job> getOutgoingQueue() {
@@ -36,6 +37,14 @@ public class MyScheduler {
             case "avg wait":
             break;
             case "max wait":
+                try{
+                    semaphore.acquire();
+                    outgoing.add(incoming.take());
+                    semaphore.release();
+                }
+                catch (Exception e) {
+                    System.out.println("There was an error");
+                }
             break;
             case "combined":
             break;
