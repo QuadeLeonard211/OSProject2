@@ -10,8 +10,8 @@ public class MyScheduler {
     // 'max wait' - first come first serve
     // 'combined' - combined FCFS and SJF
     // 'deadlines' - earliest deadline first
-    LinkedBlcokingQueue<Job> outgoing;
-    LinkedBlcokingQueue<Job> incoming;
+    LinkedBlockingQueue<Job> outgoing;
+    LinkedBlockingQueue<Job> incoming;
     private Semaphore semaphore;
 
     public MyScheduler(int numJobs, String property) {
@@ -19,7 +19,7 @@ public class MyScheduler {
         this.property = property;
         this.outgoing = getOutgoingQueue();
         this.incoming = getIncomingQueue();
-        this.locker = new Semaphore(numJobs / 2);
+        this.semaphore = new Semaphore(numJobs / 2);
     }
 
     public LinkedBlockingQueue<Job> getOutgoingQueue() {
@@ -28,7 +28,7 @@ public class MyScheduler {
     }
 
     public LinkedBlockingQueue<Job> getIncomingQueue() {
-        LinkedBlcokingQueue<Job> incoming = new LinkedBlockingQueue(numJobs);
+        LinkedBlockingQueue<Job> incoming = new LinkedBlockingQueue(numJobs);
         return incoming;
     }
 
