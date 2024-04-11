@@ -18,45 +18,44 @@ public class MyScheduler {
         this.numJobs = numJobs;
         this.property = property;
         this.outgoing = new LinkedBlockingQueue<>(1);
-        this.incoming = new LinkedBlockingQueue<>(numJobs);
+        this.incoming = new LinkedBlockingQueue<>(numJobs / 4);
         this.semaphore = new Semaphore(numJobs / 2);
     }
 
     public LinkedBlockingQueue<Job> getOutgoingQueue() {
-        LinkedBlockingQueue<Job> outgoing = new LinkedBlockingQueue(numJobs);
+        // LinkedBlockingQueue<Job> outgoing = new LinkedBlockingQueue(numJobs);
         return outgoing;
     }
 
     public LinkedBlockingQueue<Job> getIncomingQueue() {
-        LinkedBlockingQueue<Job> incoming = new LinkedBlockingQueue(numJobs);
+        // LinkedBlockingQueue<Job> incoming = new LinkedBlockingQueue(numJobs);
         return incoming;
     }
 
     public void run() {
         System.out.println("RUN HAS BEGUN");
         // while(incoming.size() > 0){
-        switch(property){
+        switch (property) {
             case "avg wait":
-            break;
+                break;
             case "max wait":
-                try{
+                try {
                     System.out.println("MAX WAIT ENTERED");
                     semaphore.acquire();
                     outgoing.add(incoming.take());
                     semaphore.release();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.out.println("There was an error");
                 }
-            break;
+                break;
             case "combined":
-            break;
+                break;
             case "deadlines":
-            break;
+                break;
             default:
-            break;
+                break;
         }
-    // }
-    System.out.println("RUN HAS LEFT THE BUILDING");
-}
+        // }
+        System.out.println("RUN HAS LEFT THE BUILDING");
+    }
 }
