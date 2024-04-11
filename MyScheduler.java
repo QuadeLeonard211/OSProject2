@@ -17,8 +17,8 @@ public class MyScheduler {
     public MyScheduler(int numJobs, String property) {
         this.numJobs = numJobs;
         this.property = property;
-        this.outgoing = getOutgoingQueue();
-        this.incoming = getIncomingQueue();
+        this.outgoing = new LinkedBlockingQueue<>(1);
+        this.incoming = new LinkedBlockingQueue<>(numJobs);
         this.semaphore = new Semaphore(numJobs / 2);
     }
 
@@ -33,11 +33,14 @@ public class MyScheduler {
     }
 
     public void run() {
+        System.out.println("RUN HAS BEGUN");
+        // while(incoming.size() > 0){
         switch(property){
             case "avg wait":
             break;
             case "max wait":
                 try{
+                    System.out.println("MAX WAIT ENTERED");
                     semaphore.acquire();
                     outgoing.add(incoming.take());
                     semaphore.release();
@@ -53,5 +56,7 @@ public class MyScheduler {
             default:
             break;
         }
-    }
+    // }
+    System.out.println("RUN HAS LEFT THE BUILDING");
+}
 }
