@@ -37,10 +37,26 @@ public class MyScheduler {
         // while(incoming.size() > 0){
         switch (property) {
             case "avg wait":
+                while(incoming.size() > 0){
+                    try {
+                        semaphore.acquire();
+                        Job shortest = incoming.peek();
+                        for(Job job : incoming){
+                            if(job.getLength() < shortest.getLength()){
+                                shortest = job;
+                            }
+                        }
+                        semaphore.release();
+                        incoming.remove(shortest);
+                        outgoing.add(shortest);
+                    } catch (Exception e) {
+                        System.out.println("There was an error");
+                    }
+                }
                 break;
             case "max wait":
                 try {
-                    System.out.println("MAX WAIT ENTERED");
+                    // System.out.println("MAX WAIT ENTERED");
                     semaphore.acquire();
                     outgoing.add(incoming.take());
                     semaphore.release();
@@ -56,6 +72,6 @@ public class MyScheduler {
                 break;
         }
         // }
-        System.out.println("RUN HAS LEFT THE BUILDING");
+        // System.out.println("RUN HAS LEFT THE BUILDING");
     }
 }
