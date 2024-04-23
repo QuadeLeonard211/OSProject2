@@ -41,6 +41,7 @@ public class MyScheduler {
             //case "avg wait":
             if (property == "avg wait") {
                 while(jobsRemaining != 0){
+                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
                         semaphore.acquire();
                         Job shortest = incoming.peek();
