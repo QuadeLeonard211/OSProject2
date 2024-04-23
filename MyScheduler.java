@@ -44,16 +44,16 @@ public class MyScheduler {
                     try {
                         semaphore.acquire();
                         Job shortest = incoming.peek();
-                        System.out.println(shortest);
+                        //System.out.println(shortest);
                         for(Job job : incoming){
                             if(job.getLength() < shortest.getLength()){
                                 shortest = job;
                             }
                         }
-                        semaphore.release();
-                        //incoming.remove(shortest);
                         outgoing.put(shortest);
-                        incoming.take();
+                        incoming.remove(shortest);
+                        //incoming.take();
+                        semaphore.release();
                     } catch (Exception e) {
                         System.out.println("There was an error");
                         e.printStackTrace();
