@@ -45,15 +45,22 @@ public class MyScheduler {
                         semaphore.acquire();
                         Job shortest = incoming.peek();
                         //System.out.println(shortest);
-                        for(Job job : incoming){
-                            if(job.getLength() < shortest.getLength()){
-                                shortest = job;
+                        if (shortest != null){
+                        
+                            for(Job job : incoming){
+                                if(job.getLength() < shortest.getLength()){
+                                    shortest = job;
+                                }
                             }
+                            outgoing.put(shortest);
+                            incoming.remove(shortest);
+                            //incoming.take();
+                            semaphore.release();
+                        } else{
+                            //System.out.println("CODE FAILED: RETRY");
+                            //System.out.println(incoming.size());
+                            jobsRemaining++;
                         }
-                        outgoing.put(shortest);
-                        incoming.remove(shortest);
-                        //incoming.take();
-                        semaphore.release();
                     } catch (Exception e) {
                         System.out.println("There was an error");
                         e.printStackTrace();
