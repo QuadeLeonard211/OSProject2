@@ -33,63 +33,89 @@ public class MyScheduler {
     }
 
     public void run() {
+        int jobsRemaining = numJobs;
         System.out.println("RUN HAS BEGUN");
-        // while(incoming.size() > 0){
-        switch (property) {
-            case "avg wait":
-                while(incoming.size() > 0){
+        //while(incoming.size() > 0){
+
+        //switch (property) {
+            //case "avg wait":
+            if (property == "avg wait") {
+                while(jobsRemaining != 0){
                     try {
                         semaphore.acquire();
                         Job shortest = incoming.peek();
+                        System.out.println(shortest);
                         for(Job job : incoming){
                             if(job.getLength() < shortest.getLength()){
                                 shortest = job;
                             }
                         }
                         semaphore.release();
-                        incoming.remove(shortest);
-                        outgoing.add(shortest);
+                        //incoming.remove(shortest);
+                        outgoing.put(shortest);
+                        incoming.take();
                     } catch (Exception e) {
                         System.out.println("There was an error");
+                        e.printStackTrace();
                     }
+                    jobsRemaining--;
                 }
-                break; //this
-            case "max wait":
+            } //break; 
+
+            //case "max wait":
+            if (property == "max wait") {
+                while (jobsRemaining != 0) {
+                    
                 try {
                     // System.out.println("MAX WAIT ENTERED");
                     semaphore.acquire();
-                    outgoing.add(incoming.take());
+                    outgoing.put(incoming.take());
                     semaphore.release();
                 } catch (Exception e) {
                     System.out.println("There was an error");
+                    e.printStackTrace();
                 }
-                break; //this
-            case "combined":
+                jobsRemaining--;
+            }
+            } //break; 
+                
+            //case "combined":
+            if (property == "combined"){
                 System.out.println("You arent supposed to be here (combined)");
-                break;
-            case "deadlines":
+            } //break;
+
+            //case "deadlines":
+            if (property == "deadlines") {
                 //This code is a lightly modified version of the code for "avg wait". It is not final.
-                while(incoming.size() > 0){
+                while(jobsRemaining != 0){
                     try {
                         semaphore.acquire();
                         Job earliestDeadline = incoming.peek();
                         for(Job job : incoming){
                             if(job.getDeadline() < earliestDeadline.getDeadline()){
-                                earliestDeadline = job;
+                                if (job.getTimeCreated() + job.getLength() < job.getDeadline()){
+                                    earliestDeadline = job;
+                                }
                             }
                         }
                         semaphore.release();
-                        incoming.remove(earliestDeadline);
-                        outgoing.add(earliestDeadline);
+                        //incoming.remove(earliestDeadline);
+                        outgoing.put(earliestDeadline);
+                        incoming.take();
                     } catch (Exception e) {
                         System.out.println("There was an error");
+                        e.printStackTrace();
                     }
+                    jobsRemaining--;
                 }
-                break;
-            default:
-                break;
-        }
+            } //break;
+
+            // default:
+            //     System.out.println("DEFAULT DANCE");
+            //     break;
+        //}
         // }
         System.out.println("RUN HAS LEFT THE BUILDING");
-    }
+    //}
+}
 }
