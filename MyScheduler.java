@@ -53,7 +53,7 @@ public class MyScheduler {
                         System.out.println("There was an error");
                     }
                 }
-                break;
+                break; //this
             case "max wait":
                 try {
                     // System.out.println("MAX WAIT ENTERED");
@@ -63,15 +63,33 @@ public class MyScheduler {
                 } catch (Exception e) {
                     System.out.println("There was an error");
                 }
-                break;
+                break; //this
             case "combined":
+                System.out.println("You arent supposed to be here (combined)");
                 break;
             case "deadlines":
+                //This code is a lightly modified version of the code for "avg wait". It is not final.
+                while(incoming.size() > 0){
+                    try {
+                        semaphore.acquire();
+                        Job earliestDeadline = incoming.peek();
+                        for(Job job : incoming){
+                            if(job.getDeadline() < earliestDeadline.getDeadline()){
+                                earliestDeadline = job;
+                            }
+                        }
+                        semaphore.release();
+                        incoming.remove(earliestDeadline);
+                        outgoing.add(earliestDeadline);
+                    } catch (Exception e) {
+                        System.out.println("There was an error");
+                    }
+                }
                 break;
             default:
                 break;
         }
         // }
-        // System.out.println("RUN HAS LEFT THE BUILDING");
+        System.out.println("RUN HAS LEFT THE BUILDING");
     }
 }
