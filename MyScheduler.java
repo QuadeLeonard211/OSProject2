@@ -90,9 +90,21 @@ public class MyScheduler {
             //case "combined":
             if (property == "combined"){
                 //System.out.println("You arent supposed to be here (combined)");
-                //Code below is copy/pasted from avg wait
                 while(jobsRemaining != 0){
                     System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    if (incoming.size() == 1){ //Code below is copy/paste from max wait
+                    try { 
+                        // System.out.println("MAX WAIT ENTERED");
+                        semaphore.acquire();
+                        outgoing.put(incoming.take());
+                        semaphore.release();
+                    } catch (Exception e) {
+                        System.out.println("There was an error");
+                        e.printStackTrace();
+                    }
+                    jobsRemaining--;
+                }
+                else { //Code below is copy/pasted from avg wait
                     try {
                         semaphore.acquire();
                         Job shortest = incoming.peek();
@@ -119,6 +131,7 @@ public class MyScheduler {
                     }
                     jobsRemaining--;
                 }
+            }
             } //break;
 
             //case "deadlines":
