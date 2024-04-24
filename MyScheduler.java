@@ -34,16 +34,16 @@ public class MyScheduler {
 
     public void run() {
         int jobsRemaining = numJobs;
-        System.out.println("RUN HAS BEGUN");
+        //System.out.println("RUN HAS BEGUN");
         //while(incoming.size() > 0){
 
         //switch (property) {
             //case "avg wait":
             if (property == "avg wait") {
                 while(jobsRemaining != 0){
-                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
-                        semaphore.acquire();
+                        // semaphore.acquire();
                         Job shortest = incoming.peek();
                         //System.out.println(shortest);
                         if (shortest != null){
@@ -53,6 +53,7 @@ public class MyScheduler {
                                     shortest = job;
                                 }
                             }
+                            semaphore.acquire();
                             outgoing.put(shortest);
                             incoming.remove(shortest);
                             //incoming.take();
@@ -91,55 +92,56 @@ public class MyScheduler {
             if (property == "combined"){
                 //System.out.println("You arent supposed to be here (combined)");
                 while(jobsRemaining != 0){
-                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
-                    if (incoming.size() == 1){ //Code below is copy/paste from max wait
-                    try { 
-                        // System.out.println("MAX WAIT ENTERED");
-                        semaphore.acquire();
-                        outgoing.put(incoming.take());
-                        semaphore.release();
-                    } catch (Exception e) {
-                        System.out.println("There was an error");
-                        e.printStackTrace();
-                    }
-                    jobsRemaining--;
-                }
-                else { //Code below is copy/pasted from avg wait
-                    try {
-                        semaphore.acquire();
-                        Job shortestCombined = incoming.peek();
-                        //System.out.println(shortest);
-                        if (shortestCombined != null){
-                        
-                            for(Job job : incoming){
-                                if(job.getLength() < shortestCombined.getLength()){
-                                    shortestCombined = job;
-                                }
-                            }
-                            outgoing.put(shortestCombined);
-                            incoming.remove(shortestCombined);
-                            //incoming.take();
+                    //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    if (incoming.size() <= numJobs/4){ //Code below is copy/paste from max wait
+                        try { 
+                            // System.out.println("MAX WAIT ENTERED");
+                            semaphore.acquire();
+                            outgoing.put(incoming.take());
                             semaphore.release();
-                        } else{
-                            //System.out.println("CODE FAILED: RETRY");
-                            //System.out.println(incoming.size());
-                            jobsRemaining++;
+                        } catch (Exception e) {
+                            System.out.println("There was an error");
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        System.out.println("There was an error");
-                        e.printStackTrace();
-                    }
                     jobsRemaining--;
+                    }
+                    else { //Code below is copy/pasted from avg wait
+                        try {
+                            //semaphore.acquire();
+                            Job shortestCombined = incoming.peek();
+                            //System.out.println(shortest);
+                            if (shortestCombined != null){
+                            
+                                for(Job job : incoming){
+                                    if(job.getLength() < shortestCombined.getLength()){
+                                        shortestCombined = job;
+                                    }
+                                }
+                                semaphore.acquire();
+                                outgoing.put(shortestCombined);
+                                incoming.remove(shortestCombined);
+                                //incoming.take();
+                                semaphore.release();
+                            }else {
+                                //System.out.println("CODE FAILED: RETRY");
+                                //System.out.println(incoming.size());
+                                jobsRemaining++;
+                            }
+                        }catch (Exception e) {
+                            System.out.println("There was an error");
+                            e.printStackTrace();
+                        }
+                        jobsRemaining--;
+                    }
                 }
-            }
             } //break;
 
             //case "deadlines":
             if (property == "deadlines") {
                 while(jobsRemaining != 0){
-                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
-                        semaphore.acquire();
+                        //semaphore.acquire();
                         Job shortestDeadline = incoming.peek();
                         //System.out.println(shortest);
                         if (shortestDeadline != null){
@@ -149,6 +151,7 @@ public class MyScheduler {
                                     shortestDeadline = job;
                                 }
                             }
+                            semaphore.acquire();
                             outgoing.put(shortestDeadline);
                             incoming.remove(shortestDeadline);
                             //incoming.take();
@@ -171,7 +174,7 @@ public class MyScheduler {
             //     break;
         //}
         // }
-        System.out.println("RUN HAS LEFT THE BUILDING");
+        //System.out.println("RUN HAS LEFT THE BUILDING");
     //}
 }
 }
