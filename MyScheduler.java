@@ -94,28 +94,7 @@ public class MyScheduler {
 
             //case "deadlines":
             if (property == "deadlines") {
-                //This code is a lightly modified version of the code for "avg wait". It is not final.
-                while(jobsRemaining != 0){
-                    try {
-                        semaphore.acquire();
-                        Job earliestDeadline = incoming.peek();
-                        for(Job job : incoming){
-                            if(job.getDeadline() < earliestDeadline.getDeadline()){
-                                if (job.getTimeCreated() + job.getLength() < job.getDeadline()){
-                                    earliestDeadline = job;
-                                }
-                            }
-                        }
-                        semaphore.release();
-                        //incoming.remove(earliestDeadline);
-                        outgoing.put(earliestDeadline);
-                        incoming.take();
-                    } catch (Exception e) {
-                        System.out.println("There was an error");
-                        e.printStackTrace();
-                    }
-                    jobsRemaining--;
-                }
+                System.out.println("You arent supposed to be here (deadlines)");
             } //break;
 
             // default:
