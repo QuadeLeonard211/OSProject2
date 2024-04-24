@@ -107,17 +107,17 @@ public class MyScheduler {
                 else { //Code below is copy/pasted from avg wait
                     try {
                         semaphore.acquire();
-                        Job shortest = incoming.peek();
+                        Job shortestCombined = incoming.peek();
                         //System.out.println(shortest);
-                        if (shortest != null){
+                        if (shortestCombined != null){
                         
                             for(Job job : incoming){
-                                if(job.getLength() < shortest.getLength()){
-                                    shortest = job;
+                                if(job.getLength() < shortestCombined.getLength()){
+                                    shortestCombined = job;
                                 }
                             }
-                            outgoing.put(shortest);
-                            incoming.remove(shortest);
+                            outgoing.put(shortestCombined);
+                            incoming.remove(shortestCombined);
                             //incoming.take();
                             semaphore.release();
                         } else{
@@ -136,7 +136,34 @@ public class MyScheduler {
 
             //case "deadlines":
             if (property == "deadlines") {
-                System.out.println("You arent supposed to be here (deadlines)");
+                while(jobsRemaining != 0){
+                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    try {
+                        semaphore.acquire();
+                        Job shortestDeadline = incoming.peek();
+                        //System.out.println(shortest);
+                        if (shortestDeadline != null){
+                        
+                            for(Job job : incoming){
+                                if(job.getLength() < shortestDeadline.getLength()){
+                                    shortestDeadline = job;
+                                }
+                            }
+                            outgoing.put(shortestDeadline);
+                            incoming.remove(shortestDeadline);
+                            //incoming.take();
+                            semaphore.release();
+                        } else{
+                            //System.out.println("CODE FAILED: RETRY");
+                            //System.out.println(incoming.size());
+                            jobsRemaining++;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("There was an error");
+                        e.printStackTrace();
+                    }
+                    jobsRemaining--;
+                }
             } //break;
 
             // default:
