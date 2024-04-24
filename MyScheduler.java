@@ -89,7 +89,36 @@ public class MyScheduler {
                 
             //case "combined":
             if (property == "combined"){
-                System.out.println("You arent supposed to be here (combined)");
+                //System.out.println("You arent supposed to be here (combined)");
+                //Code below is copy/pasted from avg wait
+                while(jobsRemaining != 0){
+                    System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
+                    try {
+                        semaphore.acquire();
+                        Job shortest = incoming.peek();
+                        //System.out.println(shortest);
+                        if (shortest != null){
+                        
+                            for(Job job : incoming){
+                                if(job.getLength() < shortest.getLength()){
+                                    shortest = job;
+                                }
+                            }
+                            outgoing.put(shortest);
+                            incoming.remove(shortest);
+                            //incoming.take();
+                            semaphore.release();
+                        } else{
+                            //System.out.println("CODE FAILED: RETRY");
+                            //System.out.println(incoming.size());
+                            jobsRemaining++;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("There was an error");
+                        e.printStackTrace();
+                    }
+                    jobsRemaining--;
+                }
             } //break;
 
             //case "deadlines":
