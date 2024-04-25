@@ -79,11 +79,11 @@ public class MyScheduler {
                                     shortest = job;
                                 }
                             }
-                            semaphore.acquire();
+                            //semaphore.acquire();
                             outgoing.put(shortest);
                             incoming.remove(shortest);
                             //incoming.take();
-                            semaphore.release();
+                            //semaphore.release();
                         } else{
                             //System.out.println("CODE FAILED: RETRY");
                             //System.out.println(incoming.size());
@@ -103,9 +103,9 @@ public class MyScheduler {
                     
                 try {
                     // System.out.println("MAX WAIT ENTERED");
-                    semaphore.acquire();
+                    //semaphore.acquire();
                     outgoing.put(incoming.take());
-                    semaphore.release();
+                    //semaphore.release();
                 } catch (Exception e) {
                     System.out.println("There was an error");
                     e.printStackTrace();
@@ -122,9 +122,9 @@ public class MyScheduler {
                     if (incoming.size() <= numJobs/4){ //Code below is copy/paste from max wait
                         try { 
                             // System.out.println("MAX WAIT ENTERED");
-                            semaphore.acquire();
+                            //semaphore.acquire();
                             outgoing.put(incoming.take());
-                            semaphore.release();
+                            //semaphore.release();
                         } catch (Exception e) {
                             System.out.println("There was an error");
                             e.printStackTrace();
@@ -143,11 +143,11 @@ public class MyScheduler {
                                         shortestCombined = job;
                                     }
                                 }
-                                semaphore.acquire();
+                                //semaphore.acquire();
                                 outgoing.put(shortestCombined);
                                 incoming.remove(shortestCombined);
                                 //incoming.take();
-                                semaphore.release();
+                                //semaphore.release();
                             }else {
                                 //System.out.println("CODE FAILED: RETRY");
                                 //System.out.println(incoming.size());
