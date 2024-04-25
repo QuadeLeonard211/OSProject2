@@ -12,14 +12,28 @@ public class MyScheduler {
     // 'deadlines' - earliest deadline first
     LinkedBlockingQueue<Job> outgoing;
     LinkedBlockingQueue<Job> incoming;
+    PriorityBlockingQueue<Job> deadlineStuff;
+    //LinkedBlockingQueue<Job> DLoutgoing;
     private Semaphore semaphore;
 
     public MyScheduler(int numJobs, String property) {
         this.numJobs = numJobs;
         this.property = property;
-        this.outgoing = new LinkedBlockingQueue<>(1);
+        this.outgoing = new LinkedBlockingQueue<>(1); //was 1
         this.incoming = new LinkedBlockingQueue<>(numJobs / 4);
         this.semaphore = new Semaphore(numJobs / 2);
+        //this.DLoutgoing = new LinkedBlockingQueue<>(numJobs/4);
+        this.deadlineStuff = new PriorityBlockingQueue<>(numJobs/4, new Comparator<Job>() {
+            public int compare(Job job1, Job job2) {
+                if (job1.getDeadline() < job2.getDeadline()) {
+                    return -1;
+                } else if (job1.getDeadline() > job2.getDeadline()){
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
     }
 
     public LinkedBlockingQueue<Job> getOutgoingQueue() {
@@ -30,6 +44,18 @@ public class MyScheduler {
     public LinkedBlockingQueue<Job> getIncomingQueue() {
         // LinkedBlockingQueue<Job> incoming = new LinkedBlockingQueue(numJobs);
         return incoming;
+    }
+
+    public PriorityBlockingQueue<Job> getPriorityQueue() {
+        try {    
+            for (int i = 0; i < numJobs; i++){
+                Job tempForPBQ = incoming.take();
+                deadlineStuff.add(tempForPBQ);
+            }
+        } catch(Exception e) {
+            System.out.println("Fuck");
+        }
+        return deadlineStuff;
     }
 
     public void run() {
@@ -138,29 +164,16 @@ public class MyScheduler {
 
             //case "deadlines":
             if (property == "deadlines") {
+                Thread deadlineExclusiveThread = new Thread(this::getPriorityQueue);
+                deadlineExclusiveThread.start();
                 while(jobsRemaining != 0){
                     //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
-                        //semaphore.acquire();
-                        Job shortestDeadline = incoming.peek();
-                        //System.out.println(shortest);
-                        if (shortestDeadline != null){
-                        
-                            for(Job job : incoming){
-                                if(job.getLength() < shortestDeadline.getLength()){
-                                    shortestDeadline = job;
-                                }
-                            }
-                            semaphore.acquire();
-                            outgoing.put(shortestDeadline);
-                            incoming.remove(shortestDeadline);
-                            //incoming.take();
-                            semaphore.release();
-                        } else{
-                            //System.out.println("CODE FAILED: RETRY");
-                            //System.out.println(incoming.size());
-                            jobsRemaining++;
-                        }
+                        semaphore.acquire();
+                        Job temp = deadlineStuff.take();
+                        outgoing.put(temp);
+                        semaphore.release();
+
                     } catch (Exception e) {
                         System.out.println("There was an error");
                         e.printStackTrace();
