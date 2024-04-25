@@ -166,19 +166,51 @@ public class MyScheduler {
             if (property == "deadlines") {
                 Thread deadlineExclusiveThread = new Thread(this::getPriorityQueue);
                 deadlineExclusiveThread.start();
-                while(jobsRemaining != 0){
+                //Stuff for deadline tracking
+                LinkedBlockingQueue<Job> expiredDeadline = new LinkedBlockingQueue<>(numJobs/4); //buffer for storing expired jobs
+                int numExpired = 0;
+                long lastJobRuntime = 0; //How long the last job ran for
+                long elapsedTime = 0; //the (calcluated) total time that has elapsed
+                for(int i = 0; i < numJobs; i++){
                     //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
-                        semaphore.acquire();
-                        Job temp = deadlineStuff.take();
-                        outgoing.put(temp);
-                        semaphore.release();
-
+                        Job testJob = deadlineStuff.take();
+                        long expectedFinishTime = lastJobRuntime + elapsedTime + testJob.getLength();
+                        if (expectedFinishTime < testJob.getDeadline()){ //will finish in time
+                            //semaphore.acquire();
+                            //Update variables
+                            elapsedTime += testJob.getLength();
+                            lastJobRuntime = testJob.getLength();
+                            //send to outgoing
+                            outgoing.put(testJob);
+                            //semaphore.release();
+                        } else { //will NOT finish in time
+                            //semaphore.acquire();
+                            //Update variables
+                            numExpired++;
+                            elapsedTime++;
+                            lastJobRuntime = 1;
+                            //send to expired stack
+                            expiredDeadline.put(testJob);
+                            //semaphore.release();
+                        }
                     } catch (Exception e) {
                         System.out.println("There was an error");
                         e.printStackTrace();
                     }
-                    jobsRemaining--;
+                    //jobsRemaining--;
+                }
+                //now to do the expired jobs
+                for (int i = 0; i < numExpired; i++){
+                    try {
+                        //semaphore.acquire();
+                        outgoing.put(expiredDeadline.take());
+                        //semaphore.release();
+                    } catch (Exception e){
+                        System.out.println("There was an error");
+                        e.printStackTrace();
+                    }
+
                 }
             } //break;
 
