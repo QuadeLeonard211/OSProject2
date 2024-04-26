@@ -119,7 +119,7 @@ public class MyScheduler {
                 //System.out.println("You arent supposed to be here (combined)");
                 while(jobsRemaining != 0){
                     //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
-                    if (incoming.size() <= numJobs/4){ //Code below is copy/paste from max wait
+                    // if (incoming.size() <= numJobs/8){ //Code below is copy/paste from max wait
                         try { 
                             // System.out.println("MAX WAIT ENTERED");
                             //semaphore.acquire();
@@ -130,35 +130,35 @@ public class MyScheduler {
                             e.printStackTrace();
                         }
                     jobsRemaining--;
-                    }
-                    else { //Code below is copy/pasted from avg wait
-                        try {
-                            //semaphore.acquire();
-                            Job shortestCombined = incoming.peek();
-                            //System.out.println(shortest);
-                            if (shortestCombined != null){
+                    // }
+                    // else { //Code below is copy/pasted from avg wait
+                    //     try {
+                    //         //semaphore.acquire();
+                    //         Job shortestCombined = incoming.peek();
+                    //         //System.out.println(shortest);
+                    //         if (shortestCombined != null){
                             
-                                for(Job job : incoming){
-                                    if(job.getLength() < shortestCombined.getLength()){
-                                        shortestCombined = job;
-                                    }
-                                }
-                                //semaphore.acquire();
-                                outgoing.put(shortestCombined);
-                                incoming.remove(shortestCombined);
-                                //incoming.take();
-                                //semaphore.release();
-                            }else {
-                                //System.out.println("CODE FAILED: RETRY");
-                                //System.out.println(incoming.size());
-                                jobsRemaining++;
-                            }
-                        }catch (Exception e) {
-                            System.out.println("There was an error");
-                            e.printStackTrace();
-                        }
-                        jobsRemaining--;
-                    }
+                    //             for(Job job : incoming){
+                    //                 if(job.getLength() < shortestCombined.getLength()){
+                    //                     shortestCombined = job;
+                    //                 }
+                    //             }
+                    //             //semaphore.acquire();
+                    //             outgoing.put(shortestCombined);
+                    //             incoming.remove(shortestCombined);
+                    //             //incoming.take();
+                    //             //semaphore.release();
+                    //         }else {
+                    //             //System.out.println("CODE FAILED: RETRY");
+                    //             //System.out.println(incoming.size());
+                    //             jobsRemaining++;
+                    //         }
+                    //     }catch (Exception e) {
+                    //         System.out.println("There was an error");
+                    //         e.printStackTrace();
+                    //     }
+                    //     jobsRemaining--;
+                    //}
                 }
             } //break;
 
@@ -222,5 +222,5 @@ public class MyScheduler {
         // }
         //System.out.println("RUN HAS LEFT THE BUILDING");
     //}
-}
+    }
 }
