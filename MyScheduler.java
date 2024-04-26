@@ -170,8 +170,9 @@ public class MyScheduler {
                 LinkedBlockingQueue<Job> expiredDeadline = new LinkedBlockingQueue<>(numJobs/4); //buffer for storing expired jobs
                 int numExpired = 0;
                 long lastJobRuntime = 0; //How long the last job ran for
-                long elapsedTime = 0; //the (calcluated) total time that has elapsed
+                
                 for(int i = 0; i < numJobs; i++){
+                    long elapsedTime = System.currentTimeMillis(); //the (calcluated) total time that has elapsed
                     //System.out.print(""); //TF2 Coconut. For some reason this is needed to have code run consistantly
                     try {
                         Job testJob = deadlineStuff.take();
@@ -179,7 +180,7 @@ public class MyScheduler {
                         if (expectedFinishTime < testJob.getDeadline()){ //will finish in time
                             //semaphore.acquire();
                             //Update variables
-                            elapsedTime += testJob.getLength();
+                            //elapsedTime += testJob.getLength();
                             lastJobRuntime = testJob.getLength();
                             //send to outgoing
                             outgoing.put(testJob);
@@ -188,7 +189,7 @@ public class MyScheduler {
                             //semaphore.acquire();
                             //Update variables
                             numExpired++;
-                            elapsedTime++;
+                            //elapsedTime++;
                             lastJobRuntime = 1;
                             //send to expired stack
                             expiredDeadline.put(testJob);
